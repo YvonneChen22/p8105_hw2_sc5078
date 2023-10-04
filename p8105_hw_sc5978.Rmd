@@ -219,11 +219,14 @@ unique (participants_only_in_baseline$id)
 participants_only_in_amyloid <- anti_join(amyloid, baseline$id)
 unique (participants_only_in_amyloid$id)
 ```
+Findings:
 There are `r nrow(participants_only_in_baseline)`participants appear in only the baseline dataset. Their ids are `unique (participants_only_in_baseline$id)`, which means that there isn't follow-up data about their amyloid ratio. There are `r participants_only_in_amyloid |> pull(id) |> unique() |> length()` participants appear in only the amyloid dataset. Their ids are `unique (participants_only_in_amyloid$id)`, which means that they do not have basic demographic information that were measured at the study baseline or they do not meet the stated inclusion criteria (i.e. no MCI at baseline).
 
+Combine the demographic and biomarker datasets so that only participants who appear in both datasets are retained.
+``` {r combine datasets}
+prob3 <- inner_join(baseline, amyloid)
 
 
 
 
-
-
+```
