@@ -167,7 +167,10 @@ baseline = read.csv("./data_mci/MCI_baseline.csv", skip = 1, na.strings = ".") |
   drop_na(age_at_onset)
 ```
 
+Important steps in the import process:
 First, we need to import the baseline dataset. The first row is the label of each variables, so use `skip = 1` to skip the first row. We also need to set "." in the dataset as missing value with `na.strings = "."`. Then we use `janitor::clean_names()` to clean and standardize the column names. Sex and APOE4 carrier status should be categorical variables, so set sex = 1 as male, sex = 0 as female, apoe4 = 1 as APOE4 carrier, and apoe4 = 0 as APOE4 non-carrier with `case_match()`. Use `as.factor()` to change sex and apoe4 from a numeric to a factor variable. Finally, use `drop_na()` to remove any participants with no MCI at baseline.
 
+Relevant features of the dataset:
+In the baseline dataset, `r nrow(read.csv("./data_mci/MCI_baseline.csv"))` participants were recruited, and of these `r nrow(baseline)` develop MCI. The average baseline age is `r baseline |> pull(age_at_onset) |> mean()`. `r filter(baseline, sex == "female", apoe4 == "APOE4 carrier") |> count() / filter(baseline, sex == "female") |> count()` of women in the study are APOE4 carriers.
 
 
