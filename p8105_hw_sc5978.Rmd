@@ -196,8 +196,9 @@ amyloid = read.csv("./data_mci/mci_amyloid.csv", skip = 1) |>
         "6" ~ 6,
         "8" ~ 8),
     time = as.factor(time),
-    amyloid = as.numeric(amyloid)
-  )
+    amyloid = as.numeric(amyloid),
+  ) |>
+  rename(id = study_id)
 
 str(amyloid)
 ```
@@ -206,6 +207,20 @@ First, we need to import the baseline dataset by using `read.csv()`. The first r
 
 Comment on the features of the dataset:
 The `amyloid` data has `r nrow(amyloid)` observations and `r ncol(amyloid)` variables and tells us about the amyloid β 42/40 ratio in different time (in years) elapsed since the study baseline. The average amyloid ratio at baseline is `r filter(amyloid, time == "0") |> pull(amyloid) |> mean(na.rm = TRUE)`. The average amyloid ratio at year 2 is `r filter(amyloid, time == "2") |> pull(amyloid) |> mean(na.rm = TRUE)`. The average amyloid ratio at year 4 is `r filter(amyloid, time == "4") |> pull(amyloid) |> mean(na.rm = TRUE)`. The average amyloid ratio at year 6 is `r filter(amyloid, time == "6") |> pull(amyloid) |> mean(na.rm = TRUE)`. The average amyloid ratio at year 8 is `r filter(amyloid, time == "8") |> pull(amyloid) |> mean(na.rm = TRUE)`. There is a decreasing trend of amyloid ratio through time.
+
+
+Check whether some participants appear in only the baseline or amyloid datasets
+```{r unique participants}
+participants_only_in_baseline <- anti_join(baseline, amyloid, by = "id")
+participants_only_in_amyloid <- anti_join(amyloid, baseline, by = "id")
+
+participants_only_in_baseline
+participants_only_in_amyloid
+```
+
+
+
+
 
 
 
