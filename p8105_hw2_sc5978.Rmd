@@ -165,18 +165,19 @@ baseline = read.csv("./data/data_mci/MCI_baseline.csv", skip = 1, na.strings = "
         0 ~ "APOE4 non-carrier"),
     apoe4 = as.factor(apoe4)) |>
   drop_na(age_at_onset)
+
+str(baseline)
 ```
 
 Important steps in the import process:
 First, we need to import the baseline dataset by using `read.csv()`. The first row is the label of each variables, so use `skip = 1` to skip the first row. We also need to set "." in the dataset as missing value with `na.strings = "."`. Then we use `janitor::clean_names()` to clean and standardize the column names. Sex and APOE4 carrier status should be categorical variables, so set sex = 1 as male, sex = 0 as female, apoe4 = 1 as APOE4 carrier, and apoe4 = 0 as APOE4 non-carrier with `case_match()`. Use `as.factor()` to change `sex` and `apoe4` from a numeric to a factor variable. Finally, use `drop_na()` to remove any participants with no MCI at baseline.
 
 Relevant features of the dataset:
-The `baseline` data has `r nrow(baseline)` observations and `r ncol(baseline)` variables and tells us about basic demographic information were measured at the study baseline, age of MCI onset, and whether the participate is a APOE4 carrier. In the baseline dataset, `r nrow(read.csv("./data_mci/MCI_baseline.csv"))` participants were recruited, and of these `r nrow(baseline)` develop MCI. The average baseline age is `r baseline |> pull(age_at_onset) |> mean()`. `r filter(baseline, sex == "female", apoe4 == "APOE4 carrier") |> count() / filter(baseline, sex == "female") |> count()` of women in the study are APOE4 carriers.
+The `baseline` data has `r nrow(baseline)` observations and `r ncol(baseline)` variables and tells us about basic demographic information were measured at the study baseline, age of MCI onset, and whether the participate is a APOE4 carrier. In the baseline dataset, `r nrow(read.csv("./data/data_mci/MCI_baseline.csv"))` participants were recruited, and of these `r nrow(baseline)` develop MCI. The average baseline age is `r baseline |> pull(age_at_onset) |> mean()`. `r filter(baseline, sex == "female", apoe4 == "APOE4 carrier") |> count() / filter(baseline, sex == "female") |> count()` of women in the study are APOE4 carriers.
 
 
 Import, clean, and tidy the dataset of longitudinally observed biomarker values.
-```{r import and clean mic_amyloid dataset}
-str(amyloid)
+```{r import and clean mic_amyloid dataset, warning=FALSE}
 rm(amyloid)
 ## import and clean the baseline dataset
 amyloid = read.csv("./data/data_mci/mci_amyloid.csv", skip = 1) |>
@@ -216,7 +217,7 @@ participants_only_in_baseline <- anti_join(baseline, amyloid, by = "id")
 unique (participants_only_in_baseline$id)
 
 ## Participants id that is unique in amyloid dataset
-participants_only_in_amyloid <- anti_join(amyloid, baseline$id)
+participants_only_in_amyloid <- anti_join(amyloid, baseline)
 unique (participants_only_in_amyloid$id)
 ```
 Findings:
