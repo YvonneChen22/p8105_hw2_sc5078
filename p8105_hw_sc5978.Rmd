@@ -10,6 +10,7 @@ Load the tidyverse library
 ```{r setup, include = FALSE}
 library(tidyverse)
 library(readxl)
+library(dplyr)
 ```
 
 Import three datasets
@@ -76,7 +77,13 @@ trash = read_excel(
   sheet = "Mr. Trash Wheel",
   range = "A2:N586",
   col_names = TRUE,
+  na = "",
   trim_ws = TRUE,
   skip = 0,
   n_max = )
+```
+
+Create a new homes_powered variable based on Homes powered note
+```{r homes_powered}
+trash$homes_powered = trash$`Weight (tons)` * 500 / 30
 ```
