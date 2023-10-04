@@ -11,3 +11,33 @@ Load the tidyverse library
 library(tidyverse)
 ```
 
+Import three datasets
+```{r dataset}
+## finds my current working directory
+getwd()
+
+## Import and clean pols_month.cvs datasets
+pols_month = read.csv("./fivethirtyeight_datasets/pols-month.csv") |>
+  janitor::clean_names()|>
+  separate(mon, into=c("year", "month", "day"), convert = TRUE) |>
+  mutate(
+    month = month.name[month],
+    president = 
+      case_match(
+        prez_gop, 
+        0 ~ "democratic",
+        1 ~ "republican", 
+        2 ~ "republican"),
+    president = as.factor(president)) |>
+  select(-day, -prez_dem,-prez_gop)
+
+
+## Import and clean snp.csv datasets
+snp = read.csv("./fivethirtyeight_datasets/snp.csv")
+
+```
+
+
+
+
+
