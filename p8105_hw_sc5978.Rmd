@@ -45,7 +45,10 @@ snp = read.csv("./fivethirtyeight_datasets/snp.csv") |>
 
 ```
 
+```{r clean unemployment}
+## Import and clean unemployment.csv datasets
+unemployment = read.csv("./fivethirtyeight_datasets/unemployment.csv") |>
+  janitor::clean_names()|>
 
-
-
+```
 
