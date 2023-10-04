@@ -82,12 +82,12 @@ Mr_trash = read_excel(
   trim_ws = TRUE,
   skip = 0,
   n_max = ) |>
+  na.omit() |>
   janitor::clean_names() |>
   mutate(
     homes_powered = weight_tons * 500 / 30
   )
 ```
-
 
 Clean Professor Trash Wheel and Gwynnda datasets
 ```{r clean Professor Trash Wheel and Gwynnda}
@@ -100,7 +100,12 @@ Prof_trash = read_excel(
   na = "",
   trim_ws = TRUE,
   skip = 0,
-  n_max = )
+  n_max = ) |>
+  na.omit() |>
+  janitor::clean_names() |>
+  mutate(
+    homes_powered = weight_tons * 500 / 30
+  )
 
 
 
