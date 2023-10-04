@@ -55,3 +55,12 @@ unemployment = read.csv("./fivethirtyeight_datasets/unemployment.csv") |>
     values_to = "unemployment")
 ```
 
+Join the datasets by merging snp into pols, and merging unemployment into the result
+```{r merge datasets}
+## merging snp into pols then merging unemployment into them
+prob1 = 
+  left_join(pols_month, snp) |>
+  left_join(x = _, y = unemployment)
+
+str(prob1)
+```
