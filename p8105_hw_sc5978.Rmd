@@ -171,7 +171,7 @@ Important steps in the import process:
 First, we need to import the baseline dataset by using `read.csv()`. The first row is the label of each variables, so use `skip = 1` to skip the first row. We also need to set "." in the dataset as missing value with `na.strings = "."`. Then we use `janitor::clean_names()` to clean and standardize the column names. Sex and APOE4 carrier status should be categorical variables, so set sex = 1 as male, sex = 0 as female, apoe4 = 1 as APOE4 carrier, and apoe4 = 0 as APOE4 non-carrier with `case_match()`. Use `as.factor()` to change `sex` and `apoe4` from a numeric to a factor variable. Finally, use `drop_na()` to remove any participants with no MCI at baseline.
 
 Relevant features of the dataset:
-In the baseline dataset, `r nrow(read.csv("./data_mci/MCI_baseline.csv"))` participants were recruited, and of these `r nrow(baseline)` develop MCI. The average baseline age is `r baseline |> pull(age_at_onset) |> mean()`. `r filter(baseline, sex == "female", apoe4 == "APOE4 carrier") |> count() / filter(baseline, sex == "female") |> count()` of women in the study are APOE4 carriers.
+The `baseline` data has `r nrow(baseline)` observations and `r ncol(baseline)` variables and tells us about basic demographic information were measured at the study baseline, age of MCI onset, and whether the participate is a APOE4 carrier. In the baseline dataset, `r nrow(read.csv("./data_mci/MCI_baseline.csv"))` participants were recruited, and of these `r nrow(baseline)` develop MCI. The average baseline age is `r baseline |> pull(age_at_onset) |> mean()`. `r filter(baseline, sex == "female", apoe4 == "APOE4 carrier") |> count() / filter(baseline, sex == "female") |> count()` of women in the study are APOE4 carriers.
 
 
 Import, clean, and tidy the dataset of longitudinally observed biomarker values.
@@ -179,7 +179,7 @@ Import, clean, and tidy the dataset of longitudinally observed biomarker values.
 str(amyloid)
 rm(amyloid)
 ## import and clean the baseline dataset
-amyloid = read.csv("./data_mci/mci_amyloid.csv", skip = 1, na.strings = "NA") |>
+amyloid = read.csv("./data_mci/mci_amyloid.csv", skip = 1) |>
   janitor::clean_names()|>
   pivot_longer(
     baseline:time_8,
@@ -198,10 +198,14 @@ amyloid = read.csv("./data_mci/mci_amyloid.csv", skip = 1, na.strings = "NA") |>
     time = as.factor(time),
     amyloid = as.numeric(amyloid)
   )
+
+str(amyloid)
 ```
 Comment on the steps on the import process:
 First, we need to import the baseline dataset by using `read.csv()`. The first row is the label of each variables, so use `skip = 1` to skip the first row. We also need to set "." in the dataset as missing value with `na.strings = "NA"`. Then we use `janitor::clean_names()` to clean and standardize the column names. The amyloid β 42/40 ratiois spread across five columns, which correspond to five observation times. We can fix this problem using `pivot_longer`. The original column names were informative but we probably don’t need to keep the `time_` prefix in each case. Then we match the character variables of each observations times to numeric values with `case_match()`. Use `as.factor()` to change `time` from a numeric to a factor variable. Use `as.numeric()` to change `amyloid` from a character to numeric variable.
 
+Comment on the features of the dataset:
+The `amyloid` data has `r nrow(amyloid)` observations and `r ncol(amyloid)` variables and tells us about the amyloid β 42/40 ratio in different time (in years) elapsed since the study baseline. The average amyloid ratio at baseline is `r filter(amyloid, time == "0") |> pull(amyloid) |> mean(na.rm = TRUE)`. The average amyloid ratio at year 2 is `r filter(amyloid, time == "2") |> pull(amyloid) |> mean(na.rm = TRUE)`. The average amyloid ratio at year 4 is `r filter(amyloid, time == "4") |> pull(amyloid) |> mean(na.rm = TRUE)`. The average amyloid ratio at year 6 is `r filter(amyloid, time == "6") |> pull(amyloid) |> mean(na.rm = TRUE)`. The average amyloid ratio at year 8 is `r filter(amyloid, time == "8") |> pull(amyloid) |> mean(na.rm = TRUE)`. There is a decreasing trend of amyloid ratio through time.
 
 
 
