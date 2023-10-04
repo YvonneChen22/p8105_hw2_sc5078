@@ -82,7 +82,6 @@ Mr_trash = read_excel(
   trim_ws = TRUE,
   skip = 0,
   n_max = ) |>
-  na.omit() |>
   janitor::clean_names() |>
   mutate(
     homes_powered = weight_tons * 500 / 30,
@@ -102,7 +101,6 @@ Prof_trash = read_excel(
   trim_ws = TRUE,
   skip = 0,
   n_max = ) |>
-  na.omit() |>
   janitor::clean_names() |>
   mutate(
     homes_powered = weight_tons * 500 / 30,
@@ -119,7 +117,6 @@ Gwynnda = read_excel(
   trim_ws = TRUE,
   skip = 0,
   n_max = ) |>
-  na.omit() |>
   janitor::clean_names() |>
   mutate(
     homes_powered = weight_tons * 500 / 30,
@@ -142,9 +139,34 @@ prob2 = bind_rows(Mr_trash, Prof_trash, Gwynnda)
 str(prob2)
 ```
 
-Notice that there are some `NA` values in the `sports_balls` and `glass_bottles` variables, which indicate that the value of these variables is missing at those locations.
+Notice that there are some `NA` values in the `sports_balls`, `wrappers`, and `glass_bottles` variables, which indicate that the value of these variables is missing at those locations.
 
-Let's talk about the prob2 datasets. The `Mr_trash` data has `r nrow(Mr_trash)` observations and `r ncol(Mr_trash)` variables and tells us about the weight of trash and specific amount in different types of trash in each dumpster for a given year from years `r Mr_trash |> pull(year) |> min()` to `r Mr_trash |> pull(year) |> max()`. It also tells us how many homes in Maryland can be powered with incinerating trash, the average homes can be powered by Mr. Trash Wheel was `r filter(prob2, trash_wheel == "Mr. Trash Wheel") |> pull(homes_powered) |> mean() |> round(0)`. The `Prof_trash` data has `r nrow(Prof_trash)` observations and `r ncol(Prof_trash)` variables, ranging from years `r Prof_trash |> pull(year) |> min()` to `r Prof_trash |> pull(year) |> max()`. The average homes can be powered by Professor Trash Wheel was `r filter(prob2, trash_wheel == "Professor Trash Wheel") |> pull(homes_powered) |> mean() |> round(0)`. The `Gwynnda` data has `r nrow(Gwynnda)` observations and `r ncol(Gwynnda)` variables ranging from years `r Gwynnda |> pull(year) |> min()` to `r Gwynnda |> pull(year) |> max()`. The average homes can be powered by Gwynnda Trash Wheel was `r filter(prob2, trash_wheel == "Gwynnda Trash Wheel") |> pull(homes_powered) |> mean() |> round(0)`. The average homes powered by three trash wheels was `r prob2 |> pull(homes_powered) |> mean() |> round(0)`.
+Let's talk about the prob2 datasets. The `Mr_trash` data has `r nrow(Mr_trash)` observations and `r ncol(Mr_trash)` variables and tells us about the weight of trash and specific amount in different types of trash in each dumpster for a given year from years `r Mr_trash |> pull(year) |> min()` to `r Mr_trash |> pull(year) |> max()`. It also tells us how many homes in Maryland can be powered with incinerating trash, the average homes can be powered by Mr. Trash Wheel was `r filter(prob2, trash_wheel == "Mr. Trash Wheel") |> pull(homes_powered) |> mean() |> round(0)`. The `Prof_trash` data has `r nrow(Prof_trash)` observations and `r ncol(Prof_trash)` variables, ranging from years `r Prof_trash |> pull(year) |> min()` to `r Prof_trash |> pull(year) |> max()`. The average homes can be powered by Professor Trash Wheel was `r filter(prob2, trash_wheel == "Professor Trash Wheel") |> pull(homes_powered) |> mean() |> round(0)`. The `Gwynnda` data has `r nrow(Gwynnda)` observations and `r ncol(Gwynnda)` variables ranging from years `r Gwynnda |> pull(year) |> min()` to `r Gwynnda |> pull(year) |> max()`. The average homes can be powered by Gwynnda Trash Wheel was `r filter(prob2, trash_wheel == "Gwynnda Trash Wheel") |> pull(homes_powered) |> mean() |> round(0)`. The average homes powered by three trash wheels was `r prob2 |> pull(homes_powered) |> mean() |> round(0)`. The total weight of trash collected by Professor Trash Wheel was `r filter(prob2, trash_wheel == "Professor Trash Wheel") |> pull(weight_tons) |> sum()` tons. The total number of cigarette butts collected by Gwynnda in July of 2021 was `r filter(prob2, month == "July", year == 2021, trash_wheel == "Gwynnda Trash Wheel") |> pull(cigarette_butts) |>sum()`.
 
 
+# Problem 3
+Import, clean, and tidy the dataset of baseline demographics so that sex and APOE4 carrier status are appropriate encoded (i.e. not numeric), and remove any participants who do not meet the stated inclusion criteria (i.e. no MCI at baseline).
+```{r import and clean the baseline dataset}
+baseline = read.csv("./data_mci/MCI_baseline.csv", skip = 1) |>
+  janitor::clean_names()|>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
 
