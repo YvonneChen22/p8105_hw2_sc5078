@@ -21,7 +21,7 @@ Import three datasets
 getwd()
 
 ## Import and clean pols_month.cvs datasets
-pols_month = read.csv("./fivethirtyeight_datasets/pols-month.csv") |>
+pols_month = read.csv("./data/fivethirtyeight_datasets/pols-month.csv") |>
   janitor::clean_names()|>
   separate(mon, into=c("year", "month", "day"), convert = TRUE) |>
   mutate(
@@ -38,7 +38,7 @@ pols_month = read.csv("./fivethirtyeight_datasets/pols-month.csv") |>
 
 ```{r clean snp}
 ## Import and clean snp.csv datasets
-snp = read.csv("./fivethirtyeight_datasets/snp.csv") |>
+snp = read.csv("./data/fivethirtyeight_datasets/snp.csv") |>
   janitor::clean_names()|>
   separate(date, into=c("month", "day", "year"), convert = TRUE) |>
   arrange(year, month) |>
@@ -51,7 +51,7 @@ snp = read.csv("./fivethirtyeight_datasets/snp.csv") |>
 
 ```{r clean unemployment}
 ## Import and clean unemployment.csv datasets
-unemployment = read.csv("./fivethirtyeight_datasets/unemployment.csv") |>
+unemployment = read.csv("./data/fivethirtyeight_datasets/unemployment.csv") |>
   rename(year = Year) |>
   pivot_longer(
     Jan:Dec,
@@ -75,7 +75,7 @@ The pols_month dataset has 822 observations of 9 variables related to the number
 Read and clean the Mr. Trash Wheel sheet, update the data to include a new homes_powered variable based on Homes powered note
 ```{r clean Mr. Trash Wheel sheet}
 Mr_trash = read_excel(
-  "./202309 Trash Wheel Collection Data.xlsx",
+  "./data/202309 Trash Wheel Collection Data.xlsx",
   sheet = "Mr. Trash Wheel",
   range = "A2:N586",
   col_names = TRUE,
@@ -94,7 +94,7 @@ Clean Professor Trash Wheel and Gwynnda datasets
 ```{r clean Professor Trash Wheel and Gwynnda}
 ## import and clean Professor Trash Wheel
 Prof_trash = read_excel(
-  "./202309 Trash Wheel Collection Data.xlsx",
+  "./data/202309 Trash Wheel Collection Data.xlsx",
   sheet = "Professor Trash Wheel",
   range = "A2:M108",
   col_names = TRUE,
@@ -110,7 +110,7 @@ Prof_trash = read_excel(
 
 ## import and clean Gwynnda Trash Wheel
 Gwynnda = read_excel(
-  "./202309 Trash Wheel Collection Data.xlsx",
+  "./data/202309 Trash Wheel Collection Data.xlsx",
   sheet = "Gwynnda Trash Wheel",
   range = "A2:L157",
   col_names = TRUE,
@@ -149,7 +149,7 @@ Let's talk about the prob2 datasets. The `Mr_trash` data has `r nrow(Mr_trash)` 
 Import, clean, and tidy the dataset of baseline demographics so that sex and APOE4 carrier status are appropriate encoded (i.e. not numeric), and remove any participants who do not meet the stated inclusion criteria (i.e. no MCI at baseline).
 ```{r import and clean the baseline dataset}
 ## import and clean the baseline dataset
-baseline = read.csv("./data_mci/MCI_baseline.csv", skip = 1, na.strings = ".") |>
+baseline = read.csv("./data/data_mci/MCI_baseline.csv", skip = 1, na.strings = ".") |>
   janitor::clean_names()|>
   mutate(
     sex = 
@@ -179,7 +179,7 @@ Import, clean, and tidy the dataset of longitudinally observed biomarker values.
 str(amyloid)
 rm(amyloid)
 ## import and clean the baseline dataset
-amyloid = read.csv("./data_mci/mci_amyloid.csv", skip = 1) |>
+amyloid = read.csv("./data/data_mci/mci_amyloid.csv", skip = 1) |>
   janitor::clean_names()|>
   pivot_longer(
     baseline:time_8,
@@ -230,5 +230,7 @@ str(prob3)
 Describe the resulting dataset:
 The `prob3` datasets combine the demographic and biomarker datasets including only participants who appear in both datasets. There are `r prob3 |> pull(id) |> unique() |> length()` participants in the dataset of `r ncol(prob3)` variables. The dataset tells us about basic demographic information were measured at the study baseline, age of MCI onset, whether the participate is a APOE4 carrier, and the amyloid β 42/40 ratio in different time (in years) elapsed since the study baseline. 
 
-
-
+Export the result as a CSV to your data directory:
+```{r export as csv}
+write.csv(prob3, file = "./data/prob3.csv", row.names = FALSE)
+```
