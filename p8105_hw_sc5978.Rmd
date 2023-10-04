@@ -149,24 +149,25 @@ Let's talk about the prob2 datasets. The `Mr_trash` data has `r nrow(Mr_trash)` 
 Import, clean, and tidy the dataset of baseline demographics so that sex and APOE4 carrier status are appropriate encoded (i.e. not numeric), and remove any participants who do not meet the stated inclusion criteria (i.e. no MCI at baseline).
 ```{r import and clean the baseline dataset}
 ## import and clean the baseline dataset
-baseline = read.csv("./data_mci/MCI_baseline.csv", skip = 1, na.strings = ".") |> ## import dataset, skip the first row of labeling, set "." as missing value
-  janitor::clean_names()|> ## clean and standardize the column names
+baseline = read.csv("./data_mci/MCI_baseline.csv", skip = 1, na.strings = ".") |>
+  janitor::clean_names()|>
   mutate(
     sex = 
       case_match(
         sex, 
         1 ~ "male", 
-        0 ~ "female"), ## change sex = 1 as male and sex = 0 as female
-    sex = as.factor(sex), ## change sex from a numeric to factor variable
+        0 ~ "female"), 
+    sex = as.factor(sex),
     apoe4 = 
       case_match(
         apoe4, 
-        1 ~ "APOE4 carrier",  ## change apoe4 = 1 as APOE4 carrier
-        0 ~ "APOE4 non-carrier"), ## change apoe4 = 1 as APOE4 non-carrier
-    apoe4 = as.factor(apoe4)) |> ## change apoe4 from a numeric to factor variable
-  drop_na(age_at_onset) ## remove any participants with no MCI at baseline
+        1 ~ "APOE4 carrier", 
+        0 ~ "APOE4 non-carrier"),
+    apoe4 = as.factor(apoe4)) |>
+  drop_na(age_at_onset)
 ```
 
+First, we need to import the baseline dataset. The first row is the label of each variables, so use `skip = 1` to skip the first row. We also need to set "." in the dataset as missing value with `na.strings = "."`. Then we use `janitor::clean_names()` to clean and standardize the column names. Sex and APOE4 carrier status should be categorical variables, so set sex = 1 as male, sex = 0 as female, apoe4 = 1 as APOE4 carrier, and apoe4 = 0 as APOE4 non-carrier with `case_match()`. Use `as.factor()` to change sex and apoe4 from a numeric to a factor variable. Finally, use `drop_na()` to remove any participants with no MCI at baseline.
 
 
 
