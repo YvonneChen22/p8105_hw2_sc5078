@@ -9,15 +9,19 @@ output: github_document
 Load the tidyverse library
 ```{r setup, include = FALSE}
 library(tidyverse)
+library(readxl)
+library(dplyr)
+library(janitor)
+library(forcats)
 ```
 
 Import three datasets
-```{r dataset}
+```{r clean pols_month}
 ## finds my current working directory
 getwd()
 
 ## Import and clean pols_month.cvs datasets
-pols_month = read.csv("./fivethirtyeight_datasets/pols-month.csv") |>
+pols_month = read.csv("./data/fivethirtyeight_datasets/pols-month.csv") |>
   janitor::clean_names()|>
   separate(mon, into=c("year", "month", "day"), convert = TRUE) |>
   mutate(
@@ -32,7 +36,201 @@ pols_month = read.csv("./fivethirtyeight_datasets/pols-month.csv") |>
   select(-day, -prez_dem,-prez_gop)
 ```
 
+```{r clean snp}
+## Import and clean snp.csv datasets
+snp = read.csv("./data/fivethirtyeight_datasets/snp.csv") |>
+  janitor::clean_names()|>
+  separate(date, into=c("month", "day", "year"), convert = TRUE) |>
+  arrange(year, month) |>
+  mutate(
+    year = year + 2000,
+    month = month.name[month]) |>
+  select(year, month, close)
+
+```
+
+```{r clean unemployment}
+## Import and clean unemployment.csv datasets
+unemployment = read.csv("./data/fivethirtyeight_datasets/unemployment.csv") |>
+  rename(year = Year) |>
+  pivot_longer(
+    Jan:Dec,
+    names_to = "month", 
+    values_to = "unemployment")
+```
+
+Join the datasets by merging snp into pols, and merging unemployment into the result
+```{r merge datasets}
+## merging snp into pols then merging unemployment into them
+prob1 = 
+  left_join(pols_month, snp) |>
+  left_join(x = _, y = unemployment)
+
+str(prob1)
+```
+The pols_month dataset has 822 observations of 9 variables related to the number of national politicians who are democratic or republican at any given time. The snp dataset has 787 observations of 3 variables related to Standard & Poor’s stock market index (S&P), often used as a representative measure of stock market as a whole at given time. The unemployment dataset has 816 observations of 3 variables describe the unemployment rate at given time. After merging these datasets, we got all the information happened at the same month and year. There are "NA" values in the `close` and `unemployment` variables, which indicate that the value of these variables is missing at those times.
 
 
+# Problem 2
+Read and clean the Mr. Trash Wheel sheet, update the data to include a new homes_powered variable based on Homes powered note
+```{r clean Mr. Trash Wheel sheet}
+Mr_trash = read_excel(
+  "./data/202309 Trash Wheel Collection Data.xlsx",
+  sheet = "Mr. Trash Wheel",
+  range = "A2:N586",
+  col_names = TRUE,
+  na = "",
+  trim_ws = TRUE,
+  skip = 0,
+  n_max = ) |>
+  janitor::clean_names() |>
+  mutate(
+    homes_powered = weight_tons * 500 / 30,
+    year = as.numeric(year)
+  )
+```
+
+Clean Professor Trash Wheel and Gwynnda datasets
+```{r clean Professor Trash Wheel and Gwynnda}
+## import and clean Professor Trash Wheel
+Prof_trash = read_excel(
+  "./data/202309 Trash Wheel Collection Data.xlsx",
+  sheet = "Professor Trash Wheel",
+  range = "A2:M108",
+  col_names = TRUE,
+  na = "",
+  trim_ws = TRUE,
+  skip = 0,
+  n_max = ) |>
+  janitor::clean_names() |>
+  mutate(
+    homes_powered = weight_tons * 500 / 30,
+    year = as.numeric(year)
+  )
+
+## import and clean Gwynnda Trash Wheel
+Gwynnda = read_excel(
+  "./data/202309 Trash Wheel Collection Data.xlsx",
+  sheet = "Gwynnda Trash Wheel",
+  range = "A2:L157",
+  col_names = TRUE,
+  na = "",
+  trim_ws = TRUE,
+  skip = 0,
+  n_max = ) |>
+  janitor::clean_names() |>
+  mutate(
+    homes_powered = weight_tons * 500 / 30,
+    year = as.numeric(year)
+  )
+```
+
+Combine these with the Mr. Trash Wheel dataset to produce a single tidy dataset.
+```{r combine datasets}
+## add an additional variable to all datasets
+Prof_trash <- mutate(Prof_trash, trash_wheel = "Professor Trash Wheel")
+Gwynnda <- mutate(Gwynnda, trash_wheel = "Gwynnda Trash Wheel")
+Mr_trash <- mutate(Mr_trash, trash_wheel = "Mr. Trash Wheel")
+
+## Convert year variable in Prof_trash from double to numerical
+
+## Combine three datasets
+prob2 = bind_rows(Mr_trash, Prof_trash, Gwynnda)
+
+str(prob2)
+```
+
+Notice that there are some `NA` values in the `sports_balls`, `wrappers`, and `glass_bottles` variables, which indicate that the value of these variables is missing at those locations.
+
+Let's talk about the prob2 datasets. The `Mr_trash` data has `r nrow(Mr_trash)` observations and `r ncol(Mr_trash)` variables and tells us about the weight of trash and specific amount in different types of trash in each dumpster for a given year from years `r Mr_trash |> pull(year) |> min()` to `r Mr_trash |> pull(year) |> max()`. It also tells us how many homes in Maryland can be powered with incinerating trash, the average homes can be powered by Mr. Trash Wheel was `r filter(prob2, trash_wheel == "Mr. Trash Wheel") |> pull(homes_powered) |> mean() |> round(0)`. The `Prof_trash` data has `r nrow(Prof_trash)` observations and `r ncol(Prof_trash)` variables, ranging from years `r Prof_trash |> pull(year) |> min()` to `r Prof_trash |> pull(year) |> max()`. The average homes can be powered by Professor Trash Wheel was `r filter(prob2, trash_wheel == "Professor Trash Wheel") |> pull(homes_powered) |> mean() |> round(0)`. The `Gwynnda` data has `r nrow(Gwynnda)` observations and `r ncol(Gwynnda)` variables ranging from years `r Gwynnda |> pull(year) |> min()` to `r Gwynnda |> pull(year) |> max()`. The average homes can be powered by Gwynnda Trash Wheel was `r filter(prob2, trash_wheel == "Gwynnda Trash Wheel") |> pull(homes_powered) |> mean() |> round(0)`. The average homes powered by three trash wheels was `r prob2 |> pull(homes_powered) |> mean() |> round(0)`. The total weight of trash collected by Professor Trash Wheel was `r filter(prob2, trash_wheel == "Professor Trash Wheel") |> pull(weight_tons) |> sum()` tons. The total number of cigarette butts collected by Gwynnda in July of 2021 was `r filter(prob2, month == "July", year == 2021, trash_wheel == "Gwynnda Trash Wheel") |> pull(cigarette_butts) |>sum()`.
 
 
+# Problem 3
+Import, clean, and tidy the dataset of baseline demographics so that sex and APOE4 carrier status are appropriate encoded (i.e. not numeric), and remove any participants who do not meet the stated inclusion criteria (i.e. no MCI at baseline).
+```{r import and clean the baseline dataset}
+## import and clean the baseline dataset
+baseline = read.csv("./data/data_mci/MCI_baseline.csv", skip = 1, na.strings = ".") |>
+  janitor::clean_names()|>
+  mutate(
+    sex = 
+      case_match(
+        sex, 
+        1 ~ "male", 
+        0 ~ "female"), 
+    sex = as.factor(sex),
+    apoe4 = 
+      case_match(
+        apoe4, 
+        1 ~ "APOE4 carrier", 
+        0 ~ "APOE4 non-carrier"),
+    apoe4 = as.factor(apoe4)) |>
+  drop_na(age_at_onset)
+```
+
+Important steps in the import process:
+First, we need to import the baseline dataset by using `read.csv()`. The first row is the label of each variables, so use `skip = 1` to skip the first row. We also need to set "." in the dataset as missing value with `na.strings = "."`. Then we use `janitor::clean_names()` to clean and standardize the column names. Sex and APOE4 carrier status should be categorical variables, so set sex = 1 as male, sex = 0 as female, apoe4 = 1 as APOE4 carrier, and apoe4 = 0 as APOE4 non-carrier with `case_match()`. Use `as.factor()` to change `sex` and `apoe4` from a numeric to a factor variable. Finally, use `drop_na()` to remove any participants with no MCI at baseline.
+
+Relevant features of the dataset:
+The `baseline` data has `r nrow(baseline)` observations and `r ncol(baseline)` variables and tells us about basic demographic information were measured at the study baseline, age of MCI onset, and whether the participate is a APOE4 carrier. In the baseline dataset, `r nrow(read.csv("./data_mci/MCI_baseline.csv"))` participants were recruited, and of these `r nrow(baseline)` develop MCI. The average baseline age is `r baseline |> pull(age_at_onset) |> mean()`. `r filter(baseline, sex == "female", apoe4 == "APOE4 carrier") |> count() / filter(baseline, sex == "female") |> count()` of women in the study are APOE4 carriers.
+
+
+Import, clean, and tidy the dataset of longitudinally observed biomarker values.
+```{r import and clean mic_amyloid dataset}
+str(amyloid)
+rm(amyloid)
+## import and clean the baseline dataset
+amyloid = read.csv("./data/data_mci/mci_amyloid.csv", skip = 1) |>
+  janitor::clean_names()|>
+  pivot_longer(
+    baseline:time_8,
+    names_to = "time", 
+    names_prefix = "time_",
+    values_to = "amyloid") |>
+  mutate(
+    time =
+      case_match(
+        time, 
+        "baseline" ~ 0, 
+        "2" ~ 2,
+        "4" ~ 4,
+        "6" ~ 6,
+        "8" ~ 8),
+    time = as.factor(time),
+    amyloid = as.numeric(amyloid),
+  ) |>
+  rename(id = study_id)
+
+str(amyloid)
+```
+Comment on the steps on the import process:
+First, we need to import the baseline dataset by using `read.csv()`. The first row is the label of each variables, so use `skip = 1` to skip the first row. We also need to set "." in the dataset as missing value with `na.strings = "NA"`. Then we use `janitor::clean_names()` to clean and standardize the column names. The amyloid β 42/40 ratiois spread across five columns, which correspond to five observation times. We can fix this problem using `pivot_longer`. The original column names were informative but we probably don’t need to keep the `time_` prefix in each case. Then we match the character variables of each observations times to numeric values with `case_match()`. Use `as.factor()` to change `time` from a numeric to a factor variable. Use `as.numeric()` to change `amyloid` from a character to numeric variable. Finally, we want to rename "study_id" as `id`, which is the same as `id` in the `baseline` dataset.
+
+Comment on the features of the dataset:
+The `amyloid` data has `r nrow(amyloid)` observations and `r ncol(amyloid)` variables and tells us about the amyloid β 42/40 ratio in different time (in years) elapsed since the study baseline. The average amyloid ratio at baseline is `r filter(amyloid, time == "0") |> pull(amyloid) |> mean(na.rm = TRUE)`. The average amyloid ratio at year 2 is `r filter(amyloid, time == "2") |> pull(amyloid) |> mean(na.rm = TRUE)`. The average amyloid ratio at year 4 is `r filter(amyloid, time == "4") |> pull(amyloid) |> mean(na.rm = TRUE)`. The average amyloid ratio at year 6 is `r filter(amyloid, time == "6") |> pull(amyloid) |> mean(na.rm = TRUE)`. The average amyloid ratio at year 8 is `r filter(amyloid, time == "8") |> pull(amyloid) |> mean(na.rm = TRUE)`. There is a decreasing trend of amyloid ratio through time.
+
+
+Check whether some participants appear in only the baseline or amyloid datasets
+```{r unique participants}
+## Participants id that is unique in baseline dataset
+participants_only_in_baseline <- anti_join(baseline, amyloid, by = "id")
+unique (participants_only_in_baseline$id)
+
+## Participants id that is unique in amyloid dataset
+participants_only_in_amyloid <- anti_join(amyloid, baseline$id)
+unique (participants_only_in_amyloid$id)
+```
+Findings:
+There are `r nrow(participants_only_in_baseline)`participants appear in only the baseline dataset. Their ids are `unique (participants_only_in_baseline$id)`, which means that there isn't follow-up data about their amyloid ratio. There are `r participants_only_in_amyloid |> pull(id) |> unique() |> length()` participants appear in only the amyloid dataset. Their ids are `unique (participants_only_in_amyloid$id)`, which means that they do not have basic demographic information that were measured at the study baseline or they do not meet the stated inclusion criteria (i.e. no MCI at baseline).
+
+Combine the demographic and biomarker datasets so that only participants who appear in both datasets are retained.
+``` {r combine datasets}
+prob3 <- inner_join(baseline, amyloid)
+str(prob3)
+```
+Describe the resulting dataset:
+The `prob3` datasets combine the demographic and biomarker datasets including only participants who appear in both datasets. There are `r prob3 |> pull(id) |> unique() |> length()` participants in the dataset of `r ncol(prob3)` variables. The dataset tells us about basic demographic information were measured at the study baseline, age of MCI onset, whether the participate is a APOE4 carrier, and the amyloid β 42/40 ratio in different time (in years) elapsed since the study baseline. 
+
+Export the result as a CSV to your data directory:
+```{r export as csv}
+write.csv(prob3, file = "./data/prob3.csv", row.names = FALSE)
+```
