@@ -122,5 +122,16 @@ Gwynnda = read_excel(
   mutate(
     homes_powered = weight_tons * 500 / 30
   )
+```
+
+Combine these with the Mr. Trash Wheel dataset to produce a single tidy dataset.
+```{r combine datasets}
+## add an additional variable to all datasets
+Prof_trash <- mutate(Prof_trash, trash_wheel = "Professor Trash Wheel")
+Gwynnda <- mutate(Gwynnda, trash_wheel = "Gwynnda Trash Wheel")
+Mr_trash <- mutate(Mr_trash, trash_wheel = "Mr. Trash Wheel")
+
+
+
 
 ```
