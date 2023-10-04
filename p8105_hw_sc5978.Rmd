@@ -107,7 +107,20 @@ Prof_trash = read_excel(
     homes_powered = weight_tons * 500 / 30
   )
 
-
-
+## import and clean Gwynnda Trash Wheel
+Gwynnda = read_excel(
+  "./202309 Trash Wheel Collection Data.xlsx",
+  sheet = "Gwynnda Trash Wheel",
+  range = "A2:L157",
+  col_names = TRUE,
+  na = "",
+  trim_ws = TRUE,
+  skip = 0,
+  n_max = ) |>
+  na.omit() |>
+  janitor::clean_names() |>
+  mutate(
+    homes_powered = weight_tons * 500 / 30
+  )
 
 ```
