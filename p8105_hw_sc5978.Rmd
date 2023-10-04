@@ -176,9 +176,29 @@ In the baseline dataset, `r nrow(read.csv("./data_mci/MCI_baseline.csv"))` parti
 
 Import, clean, and tidy the dataset of longitudinally observed biomarker values.
 ```{r import and clean mic_amyloid dataset}
+str(amyloid)
+rm(amyloid)
 ## import and clean the baseline dataset
-amyloid = read.csv("./data_mci/mci_amyloid.csv", skip = 1, na.strings = ".") |>
+amyloid = read.csv("./data_mci/mci_amyloid.csv", skip = 1) |>
   janitor::clean_names()|>
+  pivot_longer(
+    baseline:time_8,
+    names_to = "time", 
+    names_prefix = "time_",
+    values_to = "amyloid") |>
+  mutate(
+    time =
+      case_match(
+        time, 
+        "baseline" ~ 0, 
+        "2" ~ 2,
+        "4" ~ 4,
+        "6" ~ 6,
+        "8" ~ 8),
+    time = as.factor(time),
+    amyloid = as.numeric(amyloid)
+  )
+  
 
 
 
