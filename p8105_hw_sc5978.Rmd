@@ -174,3 +174,28 @@ Relevant features of the dataset:
 In the baseline dataset, `r nrow(read.csv("./data_mci/MCI_baseline.csv"))` participants were recruited, and of these `r nrow(baseline)` develop MCI. The average baseline age is `r baseline |> pull(age_at_onset) |> mean()`. `r filter(baseline, sex == "female", apoe4 == "APOE4 carrier") |> count() / filter(baseline, sex == "female") |> count()` of women in the study are APOE4 carriers.
 
 
+Import, clean, and tidy the dataset of longitudinally observed biomarker values.
+```{r import and clean mic_amyloid dataset}
+## import and clean the baseline dataset
+amyloid = read.csv("./data_mci/mci_amyloid.csv", skip = 1, na.strings = ".") |>
+  janitor::clean_names()|>
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+
+
+
+
+
+
