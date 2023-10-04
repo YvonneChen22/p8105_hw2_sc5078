@@ -72,7 +72,7 @@ The pols_month dataset has 822 observations of 9 variables related to the number
 # Problem 2
 Read and clean the Mr. Trash Wheel sheet
 ```{r clean Mr. Trash Wheel sheet}
-trash = read_excel(
+Mr_trash = read_excel(
   "./202309 Trash Wheel Collection Data.xlsx",
   sheet = "Mr. Trash Wheel",
   range = "A2:N586",
@@ -85,5 +85,15 @@ trash = read_excel(
 
 Create a new homes_powered variable based on Homes powered note
 ```{r homes_powered}
-trash$homes_powered = trash$`Weight (tons)` * 500 / 30
+Mr_trash$homes_powered = trash$`Weight (tons)` * 500 / 30
+```
+
+Clean Professor Trash Wheel and Gwynnda datasets
+```{r clean Professor Trash Wheel and Gwynnda}
+## import and clean Professor Trash Wheel
+
+
+
+
+
 ```
