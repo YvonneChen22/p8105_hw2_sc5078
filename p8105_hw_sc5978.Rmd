@@ -11,6 +11,7 @@ Load the tidyverse library
 library(tidyverse)
 library(readxl)
 library(dplyr)
+library(janitor)
 ```
 
 Import three datasets
@@ -70,7 +71,7 @@ The pols_month dataset has 822 observations of 9 variables related to the number
 
 
 # Problem 2
-Read and clean the Mr. Trash Wheel sheet
+Read and clean the Mr. Trash Wheel sheet, update the data to include a new homes_powered variable based on Homes powered note
 ```{r clean Mr. Trash Wheel sheet}
 Mr_trash = read_excel(
   "./202309 Trash Wheel Collection Data.xlsx",
@@ -80,18 +81,26 @@ Mr_trash = read_excel(
   na = "",
   trim_ws = TRUE,
   skip = 0,
-  n_max = )
+  n_max = ) |>
+  janitor::clean_names() |>
+  mutate(
+    homes_powered = weight_tons * 500 / 30
+  )
 ```
 
-Create a new homes_powered variable based on Homes powered note
-```{r homes_powered}
-Mr_trash$homes_powered = trash$`Weight (tons)` * 500 / 30
-```
 
 Clean Professor Trash Wheel and Gwynnda datasets
 ```{r clean Professor Trash Wheel and Gwynnda}
 ## import and clean Professor Trash Wheel
-
+Prof_trash = read_excel(
+  "./202309 Trash Wheel Collection Data.xlsx",
+  sheet = "Professor Trash Wheel",
+  range = "A2:M108",
+  col_names = TRUE,
+  na = "",
+  trim_ws = TRUE,
+  skip = 0,
+  n_max = )
 
 
 
