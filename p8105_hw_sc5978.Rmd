@@ -12,7 +12,7 @@ library(tidyverse)
 ```
 
 Import three datasets
-```{r dataset}
+```{r clean pols_month}
 ## finds my current working directory
 getwd()
 
@@ -30,10 +30,18 @@ pols_month = read.csv("./fivethirtyeight_datasets/pols-month.csv") |>
         2 ~ "republican"),
     president = as.factor(president)) |>
   select(-day, -prez_dem,-prez_gop)
+```
 
-
+```{r clean snp}
 ## Import and clean snp.csv datasets
-snp = read.csv("./fivethirtyeight_datasets/snp.csv")
+snp = read.csv("./fivethirtyeight_datasets/snp.csv") |>
+  janitor::clean_names()|>
+  separate(date, into=c("month", "day", "year"), convert = TRUE) |>
+  arrange(year, month) |>
+  mutate(
+    year = year + 2000,
+    month = month.name[month]) |>
+  select(year, month, close)
 
 ```
 
