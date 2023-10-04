@@ -85,7 +85,8 @@ Mr_trash = read_excel(
   na.omit() |>
   janitor::clean_names() |>
   mutate(
-    homes_powered = weight_tons * 500 / 30
+    homes_powered = weight_tons * 500 / 30,
+    year = as.numeric(year)
   )
 ```
 
@@ -104,7 +105,8 @@ Prof_trash = read_excel(
   na.omit() |>
   janitor::clean_names() |>
   mutate(
-    homes_powered = weight_tons * 500 / 30
+    homes_powered = weight_tons * 500 / 30,
+    year = as.numeric(year)
   )
 
 ## import and clean Gwynnda Trash Wheel
@@ -120,7 +122,8 @@ Gwynnda = read_excel(
   na.omit() |>
   janitor::clean_names() |>
   mutate(
-    homes_powered = weight_tons * 500 / 30
+    homes_powered = weight_tons * 500 / 30,
+    year = as.numeric(year)
   )
 ```
 
@@ -131,7 +134,15 @@ Prof_trash <- mutate(Prof_trash, trash_wheel = "Professor Trash Wheel")
 Gwynnda <- mutate(Gwynnda, trash_wheel = "Gwynnda Trash Wheel")
 Mr_trash <- mutate(Mr_trash, trash_wheel = "Mr. Trash Wheel")
 
+## Convert year variable in Prof_trash from double to numerical
 
+## Combine three datasets
+prob2 = 
+  left_join(Mr_trash, Prof_trash) |>
+  left_join(x = _, y = Gwynnda)
+
+str(prob2)
+```
 
 
 ```
