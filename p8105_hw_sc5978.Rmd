@@ -9,6 +9,7 @@ output: github_document
 Load the tidyverse library
 ```{r setup, include = FALSE}
 library(tidyverse)
+library(readxl)
 ```
 
 Import three datasets
@@ -65,3 +66,17 @@ prob1 =
 str(prob1)
 ```
 The pols_month dataset has 822 observations of 9 variables related to the number of national politicians who are democratic or republican at any given time. The snp dataset has 787 observations of 3 variables related to Standard & Poor’s stock market index (S&P), often used as a representative measure of stock market as a whole at given time. The unemployment dataset has 816 observations of 3 variables describe the unemployment rate at given time. After merging these datasets, we got all the information happened at the same month and year. There are "NA" values in the `close` and `unemployment` variables, which indicate that the value of these variables is missing at those times.
+
+
+# Problem 2
+Read and clean the Mr. Trash Wheel sheet
+```{r clean Mr. Trash Wheel sheet}
+trash = read_excel(
+  "./202309 Trash Wheel Collection Data.xlsx",
+  sheet = "Mr. Trash Wheel",
+  range = "A2:N586",
+  col_names = TRUE,
+  trim_ws = TRUE,
+  skip = 0,
+  n_max = )
+```
