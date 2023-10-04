@@ -225,8 +225,10 @@ There are `r nrow(participants_only_in_baseline)`participants appear in only the
 Combine the demographic and biomarker datasets so that only participants who appear in both datasets are retained.
 ``` {r combine datasets}
 prob3 <- inner_join(baseline, amyloid)
-
-
-
-
+str(prob3)
 ```
+Describe the resulting dataset:
+The `prob3` datasets combine the demographic and biomarker datasets including only participants who appear in both datasets. There are `r prob3 |> pull(id) |> unique() |> length()` participants in the dataset of `r ncol(prob3)` variables. The dataset tells us about basic demographic information were measured at the study baseline, age of MCI onset, whether the participate is a APOE4 carrier, and the amyloid β 42/40 ratio in different time (in years) elapsed since the study baseline. 
+
+
+
