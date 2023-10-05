@@ -5,9 +5,9 @@ date: "2023-10-03"
 output: github_document
 ---
 
-# Problem 1
+# Problem 0
 Load the tidyverse library
-```{r setup, include = FALSE}
+```{r setup}
 library(tidyverse)
 library(readxl)
 library(dplyr)
@@ -15,6 +15,7 @@ library(janitor)
 library(forcats)
 ```
 
+# Problem 1
 Import three datasets
 ```{r clean pols_month}
 ## finds my current working directory
