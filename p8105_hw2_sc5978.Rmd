@@ -11,8 +11,6 @@ Load the tidyverse library
 library(tidyverse)
 library(readxl)
 library(dplyr)
-library(janitor)
-library(forcats)
 ```
 
 # Problem 1
@@ -172,7 +170,7 @@ Important steps in the import process:
 First, we need to import the baseline dataset by using `read.csv()`. The first row is the label of each variables, so use `skip = 1` to skip the first row. We also need to set "." in the dataset as missing value with `na.strings = "."`. Then we use `janitor::clean_names()` to clean and standardize the column names. Sex and APOE4 carrier status should be categorical variables, so set sex = 1 as male, sex = 0 as female, apoe4 = 1 as APOE4 carrier, and apoe4 = 0 as APOE4 non-carrier with `case_match()`. Use `as.factor()` to change `sex` and `apoe4` from a numeric to a factor variable. Finally, use `drop_na()` to remove any participants with no MCI at baseline.
 
 Relevant features of the dataset:
-The `baseline` data has `r nrow(baseline)` observations and `r ncol(baseline)` variables and tells us about basic demographic information were measured at the study baseline, age of MCI onset, and whether the participate is a APOE4 carrier. In the baseline dataset, `r nrow(read.csv("./data/data_mci/MCI_baseline.csv"))` participants were recruited, and of these `r nrow(baseline)` develop MCI. The average baseline age is `r baseline |> pull(age_at_onset) |> mean()`. `r filter(baseline, sex == "female", apoe4 == "APOE4 carrier") |> count() / filter(baseline, sex == "female") |> count()` of women in the study are APOE4 carriers.
+The `baseline` data has `r nrow(baseline)` observations and `r ncol(baseline)` variables and tells us about basic demographic information were measured at the study baseline, age of MCI onset, and whether the participate is a APOE4 carrier. In the baseline dataset, `r nrow(read.csv("./data/data_mci/MCI_baseline.csv"))` participants were recruited, and of these `r nrow(baseline)` develop MCI. The average baseline age is `r baseline |> pull(current_age) |> mean() |> round(2)` years. `r round(filter(baseline, sex == "female", apoe4 == "APOE4 carrier") |> count() / filter(baseline, sex == "female") |> count(), 2)` of women in the study are APOE4 carriers.
 
 
 Import, clean, and tidy the dataset of longitudinally observed biomarker values.
@@ -220,7 +218,7 @@ participants_only_in_amyloid <- anti_join(amyloid, baseline)
 unique (participants_only_in_amyloid$id)
 ```
 Findings:
-There are `r nrow(participants_only_in_baseline)`participants appear in only the baseline dataset. Their ids are `unique (participants_only_in_baseline$id)`, which means that there isn't follow-up data about their amyloid ratio. There are `r participants_only_in_amyloid |> pull(id) |> unique() |> length()` participants appear in only the amyloid dataset. Their ids are `unique (participants_only_in_amyloid$id)`, which means that they do not have basic demographic information that were measured at the study baseline or they do not meet the stated inclusion criteria (i.e. no MCI at baseline).
+There are `r nrow(participants_only_in_baseline)` participants appear in only the baseline dataset. Their ids are `r unique (participants_only_in_baseline$id)`, which means that there isn't follow-up data about their amyloid ratio. There are `r participants_only_in_amyloid |> pull(id) |> unique() |> length()` participants appear in only the amyloid dataset, which means that they do not have basic demographic information that were measured at the study baseline or they do not meet the stated inclusion criteria (i.e. no MCI at baseline).
 
 Combine the demographic and biomarker datasets so that only participants who appear in both datasets are retained.
 ``` {r combine baseline, amyloid}
@@ -228,7 +226,7 @@ prob3 <- inner_join(baseline, amyloid)
 str(prob3)
 ```
 Describe the resulting dataset:
-The `prob3` datasets combine the demographic and biomarker datasets including only participants who appear in both datasets. There are `r prob3 |> pull(id) |> unique() |> length()` participants in the dataset of `r ncol(prob3)` variables. The dataset tells us about basic demographic information were measured at the study baseline, age of MCI onset, whether the participate is a APOE4 carrier, and the amyloid β 42/40 ratio in different time (in years) elapsed since the study baseline. 
+The `prob3` datasets combine the demographic and biomarker datasets including only participants who appear in both datasets. There are `r nrow(prob3)` observations of `r prob3 |> pull(id) |> unique() |> length()` participants in the dataset of `r ncol(prob3)` variables. The dataset tells us about basic demographic information were measured at the study baseline, age of MCI onset, whether the participate is a APOE4 carrier, and the amyloid β 42/40 ratio in different time (in years) elapsed since the study baseline. 
 
 Export the result as a CSV to your data directory:
 ```{r export as csv}
